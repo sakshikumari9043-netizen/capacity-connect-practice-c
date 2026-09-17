@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GECWC Library Portal | Book Finder</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent-color: #06b6d4;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --header-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #3b82f6;
+            --primary-hover: #60a5fa;
+            --accent-color: #22d3ee;
+            --border-color: #334155;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            --header-bg: rgba(30, 41, 59, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header / Navbar */
+        header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 3rem 5% 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Search & Filter Container */
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Category Chips */
+        .categories {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 18px;
+            border-radius: 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .category-btn.active, .category-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Book Grid Section */
+        .books-section {
+            padding: 1rem 5% 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Book Card */
+        .book-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+
+        .book-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .book-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .book-author {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.8rem;
+        }
+
+        .borrow-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .borrow-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .borrow-btn.borrowed {
+            background-color: #10b981;
+            cursor: default;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-book-bookmark"></i>
+            <span>GECWC Library</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fa-solid fa-moon"></i>
+            <span id="themeText">Dark Mode</span>
+        </button>
+    </header>
+
+    <!-- Hero / Search Section -->
+    <section class="hero">
+        <h1>Find Your Next Read</h1>
+        <p>Explore thousands of academic books, engineering guides, and technical journals.</p>
+        
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search by title, author, or keyword...">
+            </div>
+            
+            <div class="categories">
+                <button class="category-btn active" onclick="filterCategory('All')">All</button>
+                <button class="category-btn" onclick="filterCategory('CSE')">CSE</button>
+                <button class="category-btn" onclick="filterCategory('ECE')">ECE</button>
+                <button class="category-btn" onclick="filterCategory('Mechanical')">Mechanical</button>
+                <button class="category-btn" onclick="filterCategory('Civil')">Civil</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Display Grid -->
+    <section class="books-section">
+        <h2 class="section-title"><i class="fa-solid fa-fire" style="color: #f59e0b;"></i> Available Books</h2>
+        <div class="book-grid" id="bookGrid">
+            <!-- Book cards generated dynamically via JS -->
+        </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Book borrowed successfully!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Designed for The Final Commit Hackathon | GEC West Champaran</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Sample Book Data
+        const books = [
+            { id: 1, title: "Introduction to Algorithms", author: "Cormen, Leiserson", dept: "CSE", copies: 4, icon: "fa-code" },
+            { id: 2, title: "Operating System Concepts", author: "Silberschatz, Galvin", dept: "CSE", copies: 2, icon: "fa-laptop-code" },
+            { id: 3, title: "Electronic Devices & Circuits", author: "Boylestad, Nashelsky", dept: "ECE", copies: 5, icon: "fa-microchip" },
+            { id: 4, title: "Fluid Mechanics", author: "R.K. Bansal", dept: "Mechanical", copies: 3, icon: "fa-gears" },
+            { id: 5, title: "Surveying Vol. 1", author: "B.C. Punmia", dept: "Civil", copies: 6, icon: "fa-compass-drafting" },
+            { id: 6, title: "Clean Code", author: "Robert C. Martin", dept: "CSE", copies: 1, icon: "fa-laptop" }
+        ];
+
+        let currentCategory = 'All';
+
+        // Render Books
+        function displayBooks(bookList) {
+            const grid = document.getElementById('bookGrid');
+            grid.innerHTML = '';
+
+            if (bookList.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No books found matching your criteria.</p>`;
+                return;
+            }
+
+            bookList.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                card.innerHTML = `
+                    <span class="book-tag">${book.dept}</span>
+                    <div class="book-icon"><i class="fa-solid ${book.icon}"></i></div>
+                    <div>
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">By ${book.author}</div>
+                    </div>
+                    <div class="book-info">
+                        <span><i class="fa-solid fa-layer-group"></i> Copies: ${book.copies}</span>
+                        <span><i class="fa-solid fa-signal" style="color:#10b981;"></i> Available</span>
+                    </div>
+                    <button class="borrow-btn" onclick="borrowBook(this, '${book.title}')">
+                        <i class="fa-solid fa-hand-holding-hand"></i> Borrow Book
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Search Filter
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = books.filter(book => {
+                const matchesSearch = book.title.toLowerCase().includes(searchTerm) || book.author.toLowerCase().includes(searchTerm);
+                const matchesCat = currentCategory === 'All' || book.dept === currentCategory;
+                return matchesSearch && matchesCat;
+            });
+            displayBooks(filtered);
+        });
+
+        // Category Filter
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === cat);
+            });
+            const filtered = cat === 'All' ? books : books.filter(b => b.dept === cat);
+            displayBooks(filtered);
+        }
+
+        // Borrow Action
+        function borrowBook(btn, title) {
+            if (!btn.classList.contains('borrowed')) {
+                btn.classList.add('borrowed');
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Borrowed`;
+                showToast(`Successfully requested: "${title}"`);
+            }
+        }
+
+        // Toast Notification Function
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Dark/Light Mode Switcher
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeText = document.getElementById('themeText');
+        
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.body.removeAttribute('data-theme');
+                themeToggleBtn.querySelector('i').className = 'fa-solid fa-moon';
+                themeText.innerText = 'Dark Mode';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggleBtn.querySelector('i').className = 'fa-solid fa-sun';
+                themeText.innerText = 'Light Mode';
+            }
+        });
+
+        // Initial Display Load
+        displayBooks(books);
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GECWC Library Portal | Book Finder</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent-color: #06b6d4;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --header-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #3b82f6;
+            --primary-hover: #60a5fa;
+            --accent-color: #22d3ee;
+            --border-color: #334155;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            --header-bg: rgba(30, 41, 59, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Header / Navbar */
+        header {
+            position: sticky; top: 0; backdrop-filter: blur(10px);
+            background-color: var(--header-bg); border-bottom: 1px solid var(--border-color);
+            padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; z-index: 100;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); }
+        
+        /* Dark/Light Mode Switcher Button */
+        .theme-toggle { 
+            background: none; border: 1px solid var(--border-color); 
+            padding: 8px 16px; border-radius: 20px; color: var(--text-color); 
+            cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500;
+        }
+        .theme-toggle:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        /* Hero & Search Section */
+        .hero { padding: 2.5rem 5% 1.5rem; text-align: center; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 2.2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Search Bar & Category Filters */
+        .search-container { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+        .search-bar { position: relative; width: 100%; }
+        .search-bar input { width: 100%; padding: 12px 20px 12px 48px; border-radius: 12px; border: 1px solid var(--border-color); background-color: var(--card-bg); color: var(--text-color); outline: none; font-size: 0.95rem; }
+        .search-bar i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+        .categories { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .category-btn { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 6px 16px; border-radius: 20px; color: var(--text-color); cursor: pointer; font-weight: 500; }
+        .category-btn.active, .category-btn:hover { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+        /* Section Styling */
+        .books-section, .records-section { padding: 1.5rem 5%; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .section-title { margin-bottom: 1.2rem; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Book Cards Grid */
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+        .book-card { background-color: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); padding: 1.2rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: var(--shadow); }
+        .book-tag { position: absolute; top: 12px; right: 12px; background: rgba(59, 130, 246, 0.1); color: var(--primary-color); padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .book-icon { font-size: 2.5rem; color: var(--primary-color); margin: 0.8rem 0; text-align: center; }
+        .book-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .borrow-btn { width: 100%; padding: 10px; border-radius: 8px; border: none; background-color: var(--primary-color); color: white; font-weight: 600; cursor: pointer; margin-top: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .borrow-btn:hover { background-color: var(--primary-hover); }
+
+        /* Pop-up Modal Form */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 16px; width: 90%; max-width: 420px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .modal-content h3 { margin-bottom: 15px; font-size: 1.2rem; color: var(--primary-color); display: flex; align-items: center; gap: 8px; }
+        .modal-content input { width: 100%; padding: 10px 14px; margin-bottom: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); outline: none; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 10px; }
+        .modal-btns button { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-submit { background: var(--primary-color); color: white; }
+        .btn-cancel { background: var(--border-color); color: var(--text-color); }
+
+        /* Borrowed Records Table */
+        .records-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-top: 10px; box-shadow: var(--shadow); }
+        .records-table th, .records-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.88rem; }
+        .records-table th { background-color: rgba(59, 130, 246, 0.1); color: var(--primary-color); font-weight: 600; }
+
+        footer { margin-top: auto; border-top: 1px solid var(--border-color); text-align: center; padding: 1.2rem; color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-book-bookmark"></i> GECWC Library
+        </div>
+        <!-- Feature 1: Dark/Light Mode Button -->
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fa-solid fa-moon"></i> 
+            <span id="themeText">Dark Mode</span>
+        </button>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Find Your Next Read</h1>
+        <p>Explore thousands of academic books, engineering guides, and technical journals.</p>
+        
+        <!-- Feature 2: Search Bar & Department Filters -->
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search book title or author...">
+            </div>
+            <div class="categories">
+                <button class="category-btn active" onclick="filterCategory('All')">All</button>
+                <button class="category-btn" onclick="filterCategory('CSE')">CSE</button>
+                <button class="category-btn" onclick="filterCategory('ECE')">ECE</button>
+                <button class="category-btn" onclick="filterCategory('Mechanical')">Mechanical</button>
+                <button class="category-btn" onclick="filterCategory('Civil')">Civil</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Card Grid -->
+    <section class="books-section">
+        <h2 class="section-title"><i class="fa-solid fa-fire" style="color: #f59e0b;"></i> Available Books</h2>
+        <div class="book-grid" id="bookGrid"></div>
+    </section>
+
+    <!-- Feature 3: Borrowed Books History Table -->
+    <section class="records-section">
+        <h2 class="section-title"><i class="fa-solid fa-list-check" style="color: #10b981;"></i> Student Borrow Records</h2>
+        <table class="records-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Roll No</th>
+                    <th>Book Title</th>
+                    <th>Recommended Teacher</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody id="recordsBody">
+                <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No books borrowed yet. Click "Borrow Book" above to request.</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Feature 4: Pop-up Student Details Form Modal -->
+    <div class="modal" id="borrowModal">
+        <div class="modal-content">
+            <h3><i class="fa-solid fa-id-card"></i> Student Borrow Form</h3>
+            <input type="text" id="stdName" placeholder="Student Name (Required)">
+            <input type="text" id="stdRoll" placeholder="Roll Number (Required)">
+            <input type="text" id="teacherName" placeholder="Recommended Teacher Name">
+            <div class="modal-btns">
+                <button class="btn-submit" onclick="submitBorrow()">Confirm Borrow</button>
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Designed for The Final Commit Hackathon | GEC West Champaran</p>
+    </footer>
+
+    <!-- JavaScript Features Logic -->
+    <script>
+        const books = [
+            { id: 1, title: "Introduction to Algorithms", author: "Cormen, Leiserson", dept: "CSE", copies: 4, icon: "fa-code" },
+            { id: 2, title: "Operating System Concepts", author: "Silberschatz, Galvin", dept: "CSE", copies: 2, icon: "fa-laptop-code" },
+            { id: 3, title: "Electronic Devices & Circuits", author: "Boylestad, Nashelsky", dept: "ECE", copies: 5, icon: "fa-microchip" },
+            { id: 4, title: "Fluid Mechanics", author: "R.K. Bansal", dept: "Mechanical", copies: 3, icon: "fa-gears" },
+            { id: 5, title: "Surveying Vol. 1", author: "B.C. Punmia", dept: "Civil", copies: 6, icon: "fa-compass-drafting" },
+            { id: 6, title: "Clean Code", author: "Robert C. Martin", dept: "CSE", copies: 1, icon: "fa-laptop" }
+        ];
+
+        let selectedBook = "";
+
+        // Display Books
+        function displayBooks(list) {
+            const grid = document.getElementById('bookGrid');
+            grid.innerHTML = '';
+            if(list.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No matching books found.</p>`;
+                return;
+            }
+            list.forEach(book => {
+                grid.innerHTML += `
+                    <div class="book-card">
+                        <span class="book-tag">${book.dept}</span>
+                        <div class="book-icon"><i class="fa-solid ${book.icon}"></i></div>
+                        <div>
+                            <h3>${book.title}</h3>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">By ${book.author}</p>
+                        </div>
+                        <button class="borrow-btn" onclick="openModal('${book.title}')">
+                            <i class="fa-solid fa-hand-holding-hand"></i> Borrow Book
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Feature 4 Modal Functions
+        function openModal(title) {
+            selectedBook = title;
+            document.getElementById('borrowModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('borrowModal').style.display = 'none';
+        }
+
+        // Feature 5 & 4 Validation and Table Record Submit
+        function submitBorrow() {
+            const name = document.getElementById('stdName').value.trim();
+            const roll = document.getElementById('stdRoll').value.trim();
+            const teacher = document.getElementById('teacherName').value.trim();
+
+            // Feature 4: Validation Alert
+            if (!name || !roll) {
+                alert("Please fill all required details! (Student Name and Roll Number)");
+                return;
+            }
+
+            const body = document.getElementById('recordsBody');
+            if (body.children[0].children[0].getAttribute('colspan')) {
+                body.innerHTML = '';
+            }
+
+            const currentTime = new Date().toLocaleString();
+
+            // Feature 3: Live Table Row Creation
+            body.innerHTML += `
+                <tr>
+                    <td><b>${name}</b></td>
+                    <td>${roll}</td>
+                    <td>${selectedBook}</td>
+                    <td>${teacher ? teacher : 'N/A'}</td>
+                    <td>${currentTime}</td>
+                </tr>
+            `;
+
+            closeModal();
+            document.getElementById('stdName').value = '';
+            document.getElementById('stdRoll').value = '';
+            document.getElementById('teacherName').value = '';
+        }
+
+        // Feature 2: Search & Category Filter Logic
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = books.filter(b => b.title.toLowerCase().includes(term) || b.author.toLowerCase().includes(term));
+            displayBooks(filtered);
+        });
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.toggle('active', b.innerText === cat));
+            displayBooks(cat === 'All' ? books : books.filter(b => b.dept === cat));
+        }
+
+        // Feature 1: Dark/Light Mode Toggle
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const themeText = document.getElementById('themeText');
+            const themeIcon = document.getElementById('themeToggle').querySelector('i');
+
+            if (isDark) {
+                document.body.removeAttribute('data-theme');
+                themeText.innerText = 'Dark Mode';
+                themeIcon.className = 'fa-solid fa-moon';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeText.innerText = 'Light Mode';
+                themeIcon.className = 'fa-solid fa-sun';
+            }
+        });
+
+        // Initial Load
+        displayBooks(books);
+    </script>
+</body>
+</html>
